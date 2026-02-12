@@ -1,4 +1,5 @@
 [package]
+published-at = "0xaa168c61e541e29f3ba20fe13c5a27f13fb8858fb11373167012e132fbc64401"
 name = "world"
 edition = "2024.beta"
 
@@ -9,4 +10,4 @@ components = { local = "../components" }
 systems = { local = "../systems" }
 
 [addresses]
-world = "0x0"
+world = "0xaa168c61e541e29f3ba20fe13c5a27f13fb8858fb11373167012e132fbc64401"

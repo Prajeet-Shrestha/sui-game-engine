@@ -1,4 +1,5 @@
 [package]
+published-at = "0x63c83d51f8bd8e07e165df2beab847ac8d5d19f28bc58bbdc6fc47172648f204"
 name = "systems"
 edition = "2024.beta"
 
@@ -8,5 +9,5 @@ entity = { local = "../entity" }
 components = { local = "../components" }
 
 [addresses]
-systems = "0x0"
+systems = "0x63c83d51f8bd8e07e165df2beab847ac8d5d19f28bc58bbdc6fc47172648f204"
 
