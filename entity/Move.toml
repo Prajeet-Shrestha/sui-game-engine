@@ -1,4 +1,5 @@
 [package]
+published-at = "0x5027c19c807223b4b91e8f70b694c5b37118d5ea727d982820b837b54697d7f4"
 name = "entity"
 edition = "2024.beta"
 
@@ -6,4 +7,4 @@ edition = "2024.beta"
 Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "framework/mainnet" }
 
 [addresses]
-entity = "0x0"
+entity = "0x5027c19c807223b4b91e8f70b694c5b37118d5ea727d982820b837b54697d7f4"
