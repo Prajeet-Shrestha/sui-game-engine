@@ -1,0 +1,12 @@
+[package]
+name = "world"
+edition = "2024.beta"
+
+[dependencies]
+Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "framework/mainnet", override = true }
+entity = { local = "../entity" }
+components = { local = "../components" }
+systems = { local = "../systems" }
+
+[addresses]
+world = "0x0"
