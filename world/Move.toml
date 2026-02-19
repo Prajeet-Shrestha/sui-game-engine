@@ -1,5 +1,5 @@
 [package]
-published-at = "0xaa168c61e541e29f3ba20fe13c5a27f13fb8858fb11373167012e132fbc64401"
+published-at = "0xc1caa6ed11b26124821c56663d904b97ee3faa2d61a90d8773c2be9c367839b2"
 name = "world"
 edition = "2024.beta"
 
@@ -10,4 +10,4 @@ components = { local = "../components" }
 systems = { local = "../systems" }
 
 [addresses]
-world = "0xaa168c61e541e29f3ba20fe13c5a27f13fb8858fb11373167012e132fbc64401"
+world = "0xc1caa6ed11b26124821c56663d904b97ee3faa2d61a90d8773c2be9c367839b2"

@@ -29,6 +29,7 @@ use systems::reward_sys;
 use systems::shop_sys;
 use systems::map_sys;
 use systems::relic_sys;
+use systems::wager_sys;
 
 // Components re-exported for convenience
 use components::deck::CardData;
@@ -598,6 +599,162 @@ public fun condition_objective(): u8 { win_condition_sys::condition_objective() 
 public fun condition_surrender(): u8 { win_condition_sys::condition_surrender() }
 public fun condition_timeout(): u8 { win_condition_sys::condition_timeout() }
 public fun condition_custom(): u8 { win_condition_sys::condition_custom() }
+
+// ═══════════════════════════════════════════════
+// WAGER WRAPPERS
+// ═══════════════════════════════════════════════
+
+/// Create a wager pool entity and its SettlementCap.
+public fun create_wager_pool(
+    world: &World,
+    wager_amount: u64,
+    max_players: u8,
+    protocol_fee_bps: u16,
+    fee_recipient: address,
+    payout_mode: u8,
+    timeout_ms: u64,
+    clock: &Clock,
+    ctx: &mut TxContext,
+): (Entity, wager_sys::SettlementCap) {
+    assert_not_paused(world);
+    wager_sys::create_pool(
+        wager_amount,
+        max_players,
+        protocol_fee_bps,
+        fee_recipient,
+        payout_mode,
+        timeout_ms,
+        clock,
+        ctx,
+    )
+}
+
+/// Place a wager for a player. Exact coin amount required.
+public fun place_wager(
+    world: &World,
+    cap: &wager_sys::SettlementCap,
+    pool_entity: &mut Entity,
+    player_entity: &mut Entity,
+    payment: sui::coin::Coin<sui::sui::SUI>,
+    ctx: &TxContext,
+) {
+    assert_not_paused(world);
+    wager_sys::place_wager(cap, pool_entity, player_entity, payment, ctx);
+}
+
+/// Lock all wagers when game starts (PENDING → LOCKED).
+public fun lock_wagers(
+    world: &World,
+    cap: &wager_sys::SettlementCap,
+    pool_entity: &Entity,
+    players: &mut vector<Entity>,
+) {
+    assert_not_paused(world);
+    wager_sys::lock_wagers(cap, pool_entity, players);
+}
+
+/// Settle: 100% to winner, no fee.
+public fun settle_winner(
+    world: &World,
+    cap: &wager_sys::SettlementCap,
+    pool_entity: &mut Entity,
+    winner_entity: &mut Entity,
+    loser_entities: &mut vector<Entity>,
+    ctx: &mut TxContext,
+) {
+    assert_not_paused(world);
+    wager_sys::settle_winner(cap, pool_entity, winner_entity, loser_entities, ctx);
+}
+
+/// Settle with fee: fee → recipient, remainder → winner.
+public fun settle_with_fee(
+    world: &World,
+    cap: &wager_sys::SettlementCap,
+    pool_entity: &mut Entity,
+    winner_entity: &mut Entity,
+    loser_entities: &mut vector<Entity>,
+    ctx: &mut TxContext,
+) {
+    assert_not_paused(world);
+    wager_sys::settle_with_fee(cap, pool_entity, winner_entity, loser_entities, ctx);
+}
+
+/// Settle proportionally by shares (basis points summing to 10000).
+public fun settle_proportional(
+    world: &World,
+    cap: &wager_sys::SettlementCap,
+    pool_entity: &mut Entity,
+    winner_entities: &mut vector<Entity>,
+    shares: vector<u64>,
+    loser_entities: &mut vector<Entity>,
+    ctx: &mut TxContext,
+) {
+    assert_not_paused(world);
+    wager_sys::settle_proportional(
+        cap, pool_entity, winner_entities, shares, loser_entities, ctx,
+    );
+}
+
+/// Settle timeout: forfeit AFK player after clock expiry.
+public fun settle_timeout(
+    world: &World,
+    cap: &wager_sys::SettlementCap,
+    pool_entity: &mut Entity,
+    winner_entity: &mut Entity,
+    loser_entity: &mut Entity,
+    clock: &Clock,
+    ctx: &mut TxContext,
+) {
+    assert_not_paused(world);
+    wager_sys::settle_timeout(
+        cap, pool_entity, winner_entity, loser_entity, clock, ctx,
+    );
+}
+
+/// Refund all players (game cancelled).
+public fun refund_all(
+    world: &World,
+    cap: &wager_sys::SettlementCap,
+    pool_entity: &mut Entity,
+    players: &mut vector<Entity>,
+    ctx: &mut TxContext,
+) {
+    assert_not_paused(world);
+    wager_sys::refund_all(cap, pool_entity, players, ctx);
+}
+
+/// Refund a single player (pre-game disconnect).
+public fun refund_player(
+    world: &World,
+    cap: &wager_sys::SettlementCap,
+    pool_entity: &mut Entity,
+    player_entity: &mut Entity,
+    ctx: &mut TxContext,
+) {
+    assert_not_paused(world);
+    wager_sys::refund_player(cap, pool_entity, player_entity, ctx);
+}
+
+/// Destroy an empty wager pool. Aborts if funds remain.
+public fun destroy_empty_pool(
+    world: &World,
+    cap: &wager_sys::SettlementCap,
+    pool_entity: &mut Entity,
+) {
+    assert_not_paused(world);
+    wager_sys::destroy_empty_pool(cap, pool_entity);
+}
+
+/// Destroy a SettlementCap after the game is fully done.
+/// No pause check — freeing a capability is always safe.
+public fun destroy_settlement_cap(cap: wager_sys::SettlementCap) {
+    wager_sys::destroy_cap(cap);
+}
+
+/// Get the pool_id a SettlementCap is bound to.
+public fun wager_cap_pool_id(cap: &wager_sys::SettlementCap): ID {
+    wager_sys::cap_pool_id(cap)
+}
 
 // ─── Cleanup ────────────────────────────────
 

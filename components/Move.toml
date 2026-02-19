@@ -1,5 +1,5 @@
 [package]
-published-at = "0x56056e084dec3522b3b069577bf1409a0927778401ce5534bfe2efba48eae3b4"
+published-at = "0x5ada3aeae7fe8aa01c211a7ddd3c05858dcb1800d4f0fc4729ed9b4fe53c5d0a"
 name = "components"
 edition = "2024.beta"
 
@@ -8,4 +8,4 @@ Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-fram
 entity = { local = "../entity" }
 
 [addresses]
-components = "0x56056e084dec3522b3b069577bf1409a0927778401ce5534bfe2efba48eae3b4"
+components = "0x5ada3aeae7fe8aa01c211a7ddd3c05858dcb1800d4f0fc4729ed9b4fe53c5d0a"

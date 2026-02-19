@@ -55,6 +55,8 @@ const COMPONENT_RELIC: u256          = 16384;      // bit 14
 const COMPONENT_GOLD: u256           = 32768;      // bit 15
 const COMPONENT_MAP_PROGRESS: u256   = 65536;      // bit 16
 const COMPONENT_MARKER: u256         = 131072;     // bit 17
+const COMPONENT_WAGER: u256          = 262144;     // bit 18
+const COMPONENT_WAGER_POOL: u256     = 524288;     // bit 19
 
 // ─── Error Constants ────────────────────────────────────────────
 
@@ -220,6 +222,8 @@ public fun relic_bit(): u256 { COMPONENT_RELIC }
 public fun gold_bit(): u256 { COMPONENT_GOLD }
 public fun map_progress_bit(): u256 { COMPONENT_MAP_PROGRESS }
 public fun marker_bit(): u256 { COMPONENT_MARKER }
+public fun wager_bit(): u256 { COMPONENT_WAGER }
+public fun wager_pool_bit(): u256 { COMPONENT_WAGER_POOL }
 
 // ─── Entity Type Accessors ──────────────────────────────────────
 

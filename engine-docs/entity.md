@@ -90,6 +90,8 @@ Each component is assigned a unique power-of-two:
 | `gold_bit()` | 15 | Gold |
 | `map_progress_bit()` | 16 | MapProgress |
 | `marker_bit()` | 17 | Marker |
+| `wager_bit()` | 18 | Wager |
+| `wager_pool_bit()` | 19 | WagerPool |
 
 ### Entity Type Constants
 

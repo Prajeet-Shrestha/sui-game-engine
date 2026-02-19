@@ -219,6 +219,25 @@ public struct World has key {
 
 ---
 
+## Wager Wrappers
+
+| Function | Delegates To |
+|----------|-------------|
+| `create_wager_pool(world, wager_amount, max_players, protocol_fee_bps, fee_recipient, payout_mode, timeout_ms, &Clock, ctx): (Entity, SettlementCap)` | `wager_sys::create_pool` |
+| `place_wager(world, &cap, pool, player, Coin<SUI>, ctx)` | `wager_sys::place_wager` |
+| `lock_wagers(world, &cap, pool, players)` | `wager_sys::lock_wagers` |
+| `settle_winner(world, &cap, pool, winner, losers, ctx)` | `wager_sys::settle_winner` |
+| `settle_with_fee(world, &cap, pool, winner, losers, ctx)` | `wager_sys::settle_with_fee` |
+| `settle_proportional(world, &cap, pool, winners, shares, losers, ctx)` | `wager_sys::settle_proportional` |
+| `settle_timeout(world, &cap, pool, winner, loser, &Clock, ctx)` | `wager_sys::settle_timeout` |
+| `refund_all(world, &cap, pool, players, ctx)` | `wager_sys::refund_all` |
+| `refund_player(world, &cap, pool, player, ctx)` | `wager_sys::refund_player` |
+| `destroy_empty_pool(world, &cap, pool)` | `wager_sys::destroy_empty_pool` |
+| `destroy_settlement_cap(cap)` | `wager_sys::destroy_cap` — no pause check |
+| `wager_cap_pool_id(&cap): ID` | `wager_sys::cap_pool_id` — no pause check |
+
+---
+
 ## Re-exported Constants
 
 | Function | Source |
@@ -256,5 +275,6 @@ Read-only query functions are accessible directly via `systems::*`:
 - `turn_sys::current_player()`, `player_count()`, `turn_number()`, `phase()`, `mode()`, `is_player_turn()`
 - `turn_sys::destroy()`, `grid_sys::destroy_empty()` — cleanup functions
 - `reward_sys::reward_gold()`, `reward_card()`, `reward_relic()` — constants
+- `wager_sys::cap_pool_id()` — read-only cap accessor
 
 These don't need pause-checking since they only read state.

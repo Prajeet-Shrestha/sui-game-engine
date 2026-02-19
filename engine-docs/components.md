@@ -271,6 +271,40 @@ Components **never call** other components or systems — they are just containe
 
 ---
 
+### Wagering Components
+
+#### Wager
+**Module:** `components::wager` · **Bit:** 18
+**Struct:** `Wager { amount: u64, status: u8, player: address }` — `has store, copy, drop`
+
+| Function | Signature |
+|----------|-----------|
+| `new` | `(amount: u64, player: address): Wager` — status starts at PENDING |
+| `amount` / `status` / `player` | getters |
+| `is_pending` / `is_locked` / `is_won` / `is_lost` / `is_refunded` | `(&Wager): bool` |
+| `set_status` | `(&mut Wager, status: u8)` — validates status range |
+| `status_pending()` / `status_locked()` / `status_won()` / `status_lost()` / `status_refunded()` | constants |
+
+---
+
+#### WagerPool
+**Module:** `components::wager_pool` · **Bit:** 19
+**Struct:** `WagerPool { pool: Balance<SUI>, wager_amount, player_count, max_players, settled, protocol_fee_bps, fee_recipient, payout_mode, created_at, timeout_ms }` — `has store` only (no copy/drop — `Balance<SUI>` prevents it)
+
+| Function | Signature |
+|----------|-----------|
+| `new` | `(wager_amount, max_players, protocol_fee_bps, fee_recipient, payout_mode, created_at, timeout_ms): WagerPool` |
+| `pool_value` / `wager_amount` / `player_count` / `max_players` / `is_settled` / `protocol_fee_bps` / `fee_recipient` / `payout_mode` / `created_at` / `timeout_ms` | getters |
+| `is_full` | `(&WagerPool): bool` |
+| `increment_player_count` / `set_settled` | mutators |
+| `join_pool` | `(&mut WagerPool, Balance<SUI>)` — merge into pool |
+| `split_pool` | `(&mut WagerPool, amount: u64): Balance<SUI>` — extract amount |
+| `withdraw_all` | `(&mut WagerPool): Balance<SUI>` — extract all |
+| `destroy_empty` | `(WagerPool)` — aborts if non-zero balance |
+| `payout_winner_all()` / `payout_proportional()` / `payout_consolation()` | mode constants |
+
+---
+
 ## Pattern
 
 Every component follows this exact pattern:

@@ -1,5 +1,5 @@
 [package]
-published-at = "0x63c83d51f8bd8e07e165df2beab847ac8d5d19f28bc58bbdc6fc47172648f204"
+published-at = "0x1ff713888ce30165692c3b386a2cf08d6263c0e93bc5c4fd3f06a0c43b239d19"
 name = "systems"
 edition = "2024.beta"
 
@@ -9,5 +9,5 @@ entity = { local = "../entity" }
 components = { local = "../components" }
 
 [addresses]
-systems = "0x63c83d51f8bd8e07e165df2beab847ac8d5d19f28bc58bbdc6fc47172648f204"
+systems = "0x1ff713888ce30165692c3b386a2cf08d6263c0e93bc5c4fd3f06a0c43b239d19"
 

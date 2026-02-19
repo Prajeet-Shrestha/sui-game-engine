@@ -1,14 +1,14 @@
 # Systems Package
 
-> **Package:** `systems` · **18 modules**
+> **Package:** `systems` · **19 modules**
 > **Path:** `engine/systems/`
-> **Dependencies:** `entity`, `components`, Sui Framework (`sui::clock`, `sui::random`)
+> **Dependencies:** `entity`, `components`, Sui Framework (`sui::clock`, `sui::random`, `sui::coin`, `sui::balance`, `sui::sui`)
 
 ---
 
 ## Concept
 
-Systems contain **all game logic**. They read/mutate components on entities but own no data themselves (stateless). Each system is a pure function module — no structs stored on-chain (except `Grid` and `TurnState` which are shared Sui objects).
+Systems contain **all game logic**. They read/mutate components on entities but own no data themselves (stateless). Each system is a pure function module — no structs stored on-chain (except `Grid`, `TurnState`, and `SettlementCap` which are shared Sui objects or capabilities).
 
 Systems enforce rules: movement validates grid bounds, combat checks range, energy asserts sufficient cost, etc.
 
@@ -228,6 +228,31 @@ Enemy HP/ATK scale with floor number.
 
 ---
 
+### 19. wager_sys — On-Chain Wagering
+
+**Struct:** `SettlementCap has key, store { id: UID, pool_id: ID }` — capability bound to exactly one pool
+
+| Function | Cap? | Description |
+|----------|:----:|-------------|
+| `create_pool` | — | Create pool entity + `SettlementCap`, returns both |
+| `place_wager` | ✅ | Assert exact coin amount, merge into pool, attach Wager |
+| `lock_wagers` | ✅ | Transition PENDING → LOCKED for all players |
+| `settle_winner` | ✅ | 100% to winner, no fee. Marks WON/LOST |
+| `settle_with_fee` | ✅ | Fee → fee_recipient, remainder → winner |
+| `settle_proportional` | ✅ | Split by shares (basis points, sum to 10000). Dust → last winner |
+| `settle_timeout` | ✅ | Assert clock expired + lobby full, forfeit AFK player |
+| `refund_all` | ✅ | Refund all pending/locked wagers (game cancelled) |
+| `refund_player` | ✅ | Refund single PENDING wager (pre-game disconnect) |
+| `destroy_empty_pool` | ✅ | Remove + destroy WagerPool. Aborts if balance > 0 |
+| `destroy_cap` | — | Destroy SettlementCap, free UID |
+| `cap_pool_id` | — | Get pool_id the cap is bound to |
+
+**Events:** `WagerPlacedEvent`, `WagerSettledEvent`, `WagerRefundedEvent`, `WagerLostEvent`
+
+**Fee calculation:** uses `u128` intermediate to prevent overflow for pools up to ~340B SUI.
+
+---
+
 ## System Categories
 
 ```
@@ -244,5 +269,8 @@ Enemy HP/ATK scale with floor number.
 │  status_effect_sys · energy_sys · card_sys  │
 │  encounter_sys · reward_sys · shop_sys      │
 │  map_sys · relic_sys                        │
+├─────────────────────────────────────────────┤
+│  Wagering                                   │
+│  wager_sys                                  │
 └─────────────────────────────────────────────┘
 ```
