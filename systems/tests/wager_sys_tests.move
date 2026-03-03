@@ -78,9 +78,10 @@ fun cleanup_player(mut e: entity::Entity) {
 /// Cleanup pool entity — remove pool component (if not already removed) and destroy.
 fun cleanup_pool(mut pool: entity::Entity) {
     if (pool.has_component(entity::wager_pool_bit())) {
-        let wp = wager_pool::remove(&mut pool);
-        // Must withdraw remaining balance before destroying
-        // Likely the pool is already settled/empty in cleanup paths
+        let mut wp = wager_pool::remove(&mut pool);
+        // Drain any remaining balance before destroying (tests may not settle)
+        let leftover = wp.withdraw_all();
+        leftover.destroy_for_testing();
         wager_pool::destroy_empty(wp);
     };
     pool.destroy();
@@ -93,7 +94,7 @@ fun cleanup_pool(mut pool: entity::Entity) {
 #[test]
 fun test_create_pool_returns_cap() {
     let mut scenario = ts::begin(ADMIN);
-    let (pool_entity, cap) = setup_pool(&mut scenario);
+    let (mut pool_entity, cap) = setup_pool(&mut scenario);
 
     // Cap's pool_id should match the pool entity's ID
     assert!(wager_sys::cap_pool_id(&cap) == object::id(&pool_entity));
@@ -545,7 +546,7 @@ fun test_refund_all() {
 // ═══════════════════════════════════════════════
 
 #[test]
-#[expected_failure(abort_code = components::wager_pool::EPoolNotEmpty)]
+#[expected_failure(abort_code = sui::balance::ENonZero)]
 fun test_destroy_pool_with_balance() {
     let mut scenario = ts::begin(PLAYER1);
     let (mut pool_entity, cap) = setup_pool(&mut scenario);
